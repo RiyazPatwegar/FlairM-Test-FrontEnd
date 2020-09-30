@@ -1,0 +1,36 @@
+.common-height {
+    min-height: 400px;
+    height: auto;
+    background-color: #343A40;
+}
+
+.col-common{
+    background-color: white;
+    border-radius: 10px;
+    margin: 15px 15px 15px;
+    min-height: 300px;
+    height: auto;
+}
+
+.col-first {
+    margin: 15px 15px 15px;
+    border-radius: 10px;
+    width: 200px
+}
+
+.orgnizationForm {
+    padding-left: 10px;
+}
+
+.showOrgnizationInfo {
+    padding-left: 10px;
+}
+
+.contact-card {
+    width: 90%;
+    margin-bottom: 5px;
+}
+
+.contact-btn {
+    margin-right:50px;
+}
