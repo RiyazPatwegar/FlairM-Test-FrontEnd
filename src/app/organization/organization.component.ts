@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonService } from '../services/common.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-organization',
@@ -8,6 +9,9 @@ import { CommonService } from '../services/common.service';
 })
 export class OrganizationComponent implements OnInit {
 
+  warningMessage: any = null;
+  successMessage: any = null;
+  imageUrl = environment.imageUrl;
   orgnizationList : any = [];
   showOrgnizationInfo: boolean = false;
   showOrgnizationForm: boolean = false;
@@ -20,29 +24,30 @@ export class OrganizationComponent implements OnInit {
 
   constructor(private commonService: CommonService) { }
 
-  ngOnInit() {    
+  ngOnInit() {
     this.getList();
   }
 
   /* Get Organization List for First Coulmn */
   getList(orgId = null) {
     this.commonService.getList().subscribe((data)=>{
-      console.log(data);
+      //console.log(data);
+      if(data['code'] !== 200){
+        this.showWarning(data['message']);        
+      }
       this.orgnizationList = data['data'];
       if(orgId !== null){
         this.showOrgnization(orgId);
       }
     });
-    
-    //console.log(this.orgnizationList);
   }
 
   /* On click organization show details in second column */
   showOrgnization(id) {
     this.showOrgnizationForm = false;
     this.showOrgnizationInfo = true;
-    this.selectedOrgnization = this.orgnizationList.find(x => x.id == id);
-    //console.log('Organization details '+id);
+    this.showOrgnizationContact = false;
+    this.selectedOrgnization = this.orgnizationList.find(x => x.id == id);   
   }
 
   /* Show orgnization form on add btton */
@@ -62,29 +67,34 @@ export class OrganizationComponent implements OnInit {
   /* submit orgnization details */
   onSubmit(forms) {
     //console.log(forms.value);
-    //console.log(this.orgnizationImage);
-    let newOrgnization = {        
-        'orgn_name': forms.value.name,
-        'orgn_logo': this.orgnizationImage,
-        'orgn_email': forms.value.email
+    console.log(this.orgnizationImage);
+    if(!this.orgnizationImage){
+      //console.log('Please select image');
+      this.showWarning('Please select image');
+      return false;
     }
-    this.commonService.createOrganization(newOrgnization).subscribe((data) =>{
-      if(data['code'] == 200){
-        console.log('Organization added successfully');
-        this.getList();
-      }else{
-        console.log(data);
-      }
-    });
+    const uploadData = new FormData();
+    uploadData.append('orgn_logo', this.orgnizationImage, this.orgnizationImage.name);
+    uploadData.append('orgn_name', forms.value.name);
+    uploadData.append('orgn_email', forms.value.email);
 
-    //this.orgnizationList.push(newOrgnization);
-    //console.log(this.orgnizationList);
-    this.contactImage = null;
-    forms.reset();
-  }  
-  
+    this.commonService.createOrganization(uploadData).subscribe((data) => {
+      if (data['code'] == 200) {
+        //console.log('Organization added successfully');
+        this.showSuccess('Organization added successfully');
+        this.getList();
+        this.contactImage = null;
+        forms.reset();
+      } else {
+        console.log(data);
+        this.showWarning(data['message']);
+        return false;
+      }
+    });    
+  }
+
   /* show orgnization contact form */
-  newOrgnizationContact() {    
+  newOrgnizationContact() {
     this.showOrgnizationContactForm = true;
     this.showOrgnizationContact = false;
   }
@@ -106,27 +116,54 @@ export class OrganizationComponent implements OnInit {
   onSubmitContact(forms) {
     //console.log(forms.value);
     //console.log(this.selectedOrgnization.id);
-    forms.value.contact_photo = this.contactImage;
-    let contactDetails = {
-      'contact_address': forms.value.contact_address,
-      'contact_email': forms.value.contact_email,
-      'contact_name': forms.value.contact_name,
-      'contact_no': forms.value.contact_no,
-      'contact_photo':  this.contactImage,
-      'orgn_id': this.selectedOrgnization.id
-    };
+    if(!this.contactImage){
+      this.showWarning('Please select photo');
+      return false;
+    }
 
+    const contactDetails = new FormData();
+    contactDetails.append('contact_photo', this.contactImage, this.contactImage.name);
+    contactDetails.append('contact_address', forms.value.contact_address);
+    contactDetails.append('contact_email', forms.value.contact_email);
+    contactDetails.append('contact_name', forms.value.contact_name);
+    contactDetails.append('contact_no', forms.value.contact_no);
+    contactDetails.append('orgn_id', this.selectedOrgnization.id);
+    
     this.commonService.addOrganizationContact(contactDetails).subscribe((data) => {
-      console.log(data)
+      //console.log(data)
       if(data['code'] == 200){
-        console.log('Contact details added successfully');
+        //console.log('Contact details added successfully');
+        this.showSuccess('Contact details added successfully');
         this.showOrgnizationContact = false;
         this.showOrgnizationContactForm = false;
         this.getList(this.selectedOrgnization.id);
+        forms.reset();
+        this.contactImage = null;
+      }else{
+        this.showWarning(data['message']);
+        return false;
       }
-    });
-    
-    forms.reset();
-    this.contactImage = null;
+    });    
+  }
+  
+  showWarning(msg) {
+    console.log(msg);
+    if (msg == ''){
+      return false;
+    }
+    this.warningMessage = msg;
+    setTimeout(() => {
+      this.warningMessage = '';
+    }, 2000);
+  }
+
+  showSuccess(msg) {
+    if (msg == ''){
+      return false;
+    }
+    this.successMessage = msg;
+    setTimeout(() => {
+      this.successMessage = '';
+    }, 2000);
   }
 }

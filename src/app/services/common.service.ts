@@ -9,10 +9,15 @@ import { environment } from 'src/environments/environment';
 })
 export class CommonService {
 
-  apiUrl = environment.apiUrl;
-  headers = new HttpHeaders({
-    'Content-Type': 'application/json'    
+  headersFile = new HttpHeaders({
+    'Content-Type': 'multipart/form-data'
   });
+
+  apiUrl = environment.apiUrl;
+  headers = new HttpHeaders({    
+    'Accept': 'application/json',
+  });
+
 
   constructor(private http: HttpClient) { }
 

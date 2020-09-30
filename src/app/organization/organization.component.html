@@ -1,22 +1,31 @@
 <div class="row">
-    <div class="col-md-2 common-height">
+    <div class="col-md-2 common-height shadow">
         <div class="col-first text-center">
             <a href="#" (click)="orgnizationForm()" class="btn btn-primary">Add New</a>
             <br/><br/>
-            <ul *ngIf="orgnizationList.length" class="list-group list-group-flush">
+            <ul *ngIf="orgnizationList && orgnizationList.length" class="list-group list-group-flush">
                 <li *ngFor="let org of orgnizationList" class="list-group-item" (click)="showOrgnization(org.id)">
                     {{ org.orgn_name }}
                 </li>
             </ul>
-        </div>
+        </div>      
     </div>
 
     <div class="col-md-5 common-height">
         <div class="col-common">
             <div *ngIf="showOrgnizationInfo" class="showOrgnizationInfo">
                 <h4>Orgnization Info</h4>
-                <label>Name :</label> {{ selectedOrgnization.orgn_name }} <br />
-                <label>Email :</label> {{ selectedOrgnization.orgn_email }}
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <label>Name :</label> {{ selectedOrgnization.orgn_name }} <br />
+                        <label>Email :</label> {{ selectedOrgnization.orgn_email }}
+                    </div>
+
+                    <div class="col-md-4" *ngIf="selectedOrgnization.orgn_logo">
+                        <img src="{{imageUrl+selectedOrgnization.orgn_logo}}" alt="logo" height="70"/>
+                    </div>
+                </div>
 
                 <hr/>
                 <label>Orgnization Contacts :</label>
@@ -48,19 +57,18 @@
                 <form #orgnForm="ngForm" (ngSubmit)="onSubmit(orgnForm)" type="multipart">
                     <div class="form-group">
                         <label for="orgnizationname">Name</label>
-                        <input type="text" class="form-control" #orgnizationname name="name" ngModel
-                            placeholder="Orgnization Name" />
+                        <input type="text" class="form-control" #orgnizationname name="name" ngModel placeholder="Orgnization Name"/>
                     </div>
                     <div class="form-group">
                         <label for="exampleInputEmail1">Email address</label>
                         <input type="email" class="form-control" #email name="email" ngModel
-                            aria-describedby="emailHelp" placeholder="Enter email" />
+                            aria-describedby="emailHelp" placeholder="Enter email" required/>
                         <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
                     </div>
                     <div class="form-group">
                         <label for="logo">Logo</label>
                         <input type="file" class="form-control" #logo name="logo" ngModel
-                            placeholder="Orgnization Logo" (change)="fileOrgnization($event)" />
+                            placeholder="Orgnization Logo" (change)="fileOrgnization($event)" required/>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button> <br/><br/>
                 </form>
@@ -72,12 +80,16 @@
         <div class="col-common">
             <div *ngIf="showOrgnizationContact">
                 <h4>Contact Detail</h4>
-                <div class="card contact-card">
+                <div class="card contact-card contact-details">
                     <div class="card-body">
+                        <div class="col-md-6" *ngIf="selectedOrgnizationContact.contact_img && selectedOrgnizationContact.contact_img.length">
+                            <img src="{{imageUrl+selectedOrgnizationContact.contact_img}}" alt="logo" height="70"/> <br/><br/>
+                                        
+                        </div>
                         <h6 class="card-subtitle mb-2 text-muted">
                             {{ selectedOrgnizationContact.contact_name }}
                         </h6>
-                        <p class="card-text">{{ selectedOrgnizationContact.contact_address }}</p>
+                        <p class="card-text">Address : {{ selectedOrgnizationContact.contact_address }}</p>
                         <p class="card-text">
                             Email : {{ selectedOrgnizationContact.contact_email }}, Contact: {{
                                 selectedOrgnizationContact.contact_no }}
@@ -91,24 +103,20 @@
                     <input type="hidden" #orgnId name="orgn_id" ngModel />
                     <div class="form-group">
                         <label for="orgnizationname">Name</label>
-                        <input type="text" class="form-control" #contactname name="contact_name" ngModel
-                            placeholder="Contact Name" />
+                        <input type="text" class="form-control" #contactname name="contact_name" ngModel placeholder="Contact Name" required/>
                     </div>
                     <div class="form-group">
                         <label for="exampleInputEmail1">Email address</label>
-                        <input type="email" class="form-control" #contactemail name="contact_email" ngModel
-                            aria-describedby="emailHelp" placeholder="Enter email" />
+                        <input type="email" class="form-control" #contactemail name="contact_email" ngModel aria-describedby="emailHelp" placeholder="Enter email" required/>
                         <!-- <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small> -->
                     </div>
                     <div class="form-group">
                         <label for="exampleInputEmail1">Contact No.</label>
-                        <input type="number" class="form-control" #contactno name="contact_no" ngModel
-                            aria-describedby="emailHelp" placeholder="Enter Contact No." />
+                        <input type="number" class="form-control" #contactno name="contact_no" ngModel aria-describedby="emailHelp" placeholder="Enter Contact No." required/>
                     </div>
                     <div class="form-group">
                         <label for="logo">Photo</label>
-                        <input type="file" class="form-control" #contact_photo name="contact_photo" ngModel
-                            placeholder="Contact Photo" (change)="fileContact($event)" />
+                        <input type="file" class="form-control " #contact_photo name="contact_photo" ngModel placeholder="Contact Photo" (change)="fileContact($event)" required/>
                     </div>
                     <div class="form-group">
                         <label for="logo">Address</label>
@@ -120,4 +128,12 @@
             </div>
         </div>
     </div>
+</div>
+
+<div *ngIf="warningMessage" class="alert alert-warning alert-dismissible custom-msg" data-auto-dismiss role="alert">  
+  <strong>Warning!</strong> {{this.warningMessage}}
+</div>
+
+<div *ngIf="successMessage" class="alert alert-success alert-dismissible custom-msg" data-auto-dismiss role="alert">  
+  <strong>Success!</strong> {{this.successMessage}}
 </div>

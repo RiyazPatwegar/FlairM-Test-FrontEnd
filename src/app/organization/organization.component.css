@@ -24,6 +24,7 @@
 
 .showOrgnizationInfo {
     padding-left: 10px;
+    padding-bottom: 10px;
 }
 
 .contact-card {
@@ -31,6 +32,27 @@
     margin-bottom: 5px;
 }
 
+.contact-details {
+    margin-left : 13px;
+}
+
 .contact-btn {
     margin-right:50px;
+}
+
+.custom-msg {
+position: fixed;
+top: 25%;
+left: 50%;
+margin-top: -100px; /* Negative half of height. */
+margin-left: -250px; /* Negative half of width. */
+}
+
+.inputfile {
+width: 0.1px;
+height: 0.1px;
+opacity: 0;
+overflow: hidden;
+position: absolute;
+z-index: -1;
 }
